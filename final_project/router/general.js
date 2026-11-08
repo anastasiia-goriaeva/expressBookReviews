@@ -3,6 +3,8 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+const axios = require("axios");
+const {response} = require("express");
 
 // Function to check if the user exists
 const doesExist = (username) => {
@@ -62,4 +64,46 @@ public_users.get('/review/:isbn',function (req, res) {
     res.json(books[isbn].reviews);
 });
 
+async function getBooks() {
+    try {
+        const response = await axios.get("http://localhost:5000/");
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function getBookByISBN(isbn) {
+    try {
+        const response = await axios.get(`http://localhost:5000/isbn/${isbn}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function getBookByAuthor(author) {
+    try {
+        const response = await axios.get(`http://localhost:5000/author/${author}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function getBookByTitle(title) {
+    try {
+        const result = await axios.get(
+            `http://localhost:5000/title/${encodeURIComponent(title)}`
+        );
+        return result.data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 module.exports.general = public_users;
+module.exports.getBooks = getBooks;
+module.exports.getBooks = getBookByISBN;
+module.exports.getBookByAuthor = getBookByAuthor;
+module.exports.getBookByTitle = getBookByTitle;
